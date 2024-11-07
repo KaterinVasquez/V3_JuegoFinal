@@ -1,0 +1,145 @@
+<!--<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | JungleGame</title>
+  </head>
+  <body style="text-align: center">
+    <canvas id="unity-canvas" width=960 height=600 style="width: 960px; height: 600px; background: #231F20"></canvas>
+    <script src="Build/V3_FinalJuego.loader.js"></script>
+    <script>
+      createUnityInstance(document.querySelector("#unity-canvas"), {
+        dataUrl: "Build/V3_FinalJuego.data.unityweb",
+        frameworkUrl: "Build/V3_FinalJuego.framework.js.unityweb",
+        codeUrl: "Build/V3_FinalJuego.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "JungleGame",
+        productVersion: "1.0",
+        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+      });
+    </script>
+  </body>
+</html>-->
+
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | JungleGame</title>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  </head>
+  <body style="text-align: center">
+    <!-- Indicador de carga -->
+    <div id="loadingMessage" style="font-size: 24px; margin-top: 20px;">Cargando...</div>
+    
+    <canvas id="unity-canvas" width=960 height=600 style="width: 960px; height: 600px; background: #231F20"></canvas>
+     <!-- Recuadro para mensajes del ESP32 -->
+    <div id="messageBox" style="display: block; border: 2px solid black; padding: 15px; width: 320px; margin: 20px auto; font-size: 18px; background-color: #e0e0e0; color: #333;">
+      <h3>Mensajes del ESP32</h3>
+      <div id="espMessages">Esperando mensajes...</div>
+  </div>
+
+    <!-- Botones de control -->
+    <button id="startButton" onclick="startGame()">Iniciar Juego</button>
+    <button id="stopButton" onclick="stopGame()">Detener Juego</button>
+
+    <script src="Build/V3_FinalJuego.loader.js"></script>
+    <script>
+        var mqttClient;
+        var unityInstance;
+        // Define la función publishMessage
+function publishMessage(topic, message) {
+            if (mqttClient && mqttClient.connected) {
+                mqttClient.publish(topic, message, (err) => {
+                    if (err) {
+                        console.error("Error al publicar el mensaje:", err);
+                    } else {
+                        console.log(`Mensaje publicado en ${topic}: ${message}`);
+                    }
+                });
+            } else {
+                console.warn("Cliente MQTT no está conectado.");
+            }
+        }
+
+        function connectMQTT() {
+            mqttClient = mqtt.connect('wss://qhali.online:8094/mqtt');
+
+            mqttClient.on('connect', () => {
+                console.log("Conectado a MQTT Broker.");
+
+                // Enviar mensaje a Unity para confirmar la conexión
+                if (unityInstance) {
+                    unityInstance.SendMessage('Player', 'OnMQTTConnected', 'true');
+                }
+
+                mqttClient.subscribe("sensor/objetoDetectado", (err) => {
+                    if (err) {
+                        console.error("Error al suscribirse:", err);
+                    } else {
+                        console.log("Suscripción exitosa a sensor/objetoDetectado");
+                    }
+                });
+                // Suscripción al tópico "mensajesESP"
+                mqttClient.subscribe("mensajesESP", (err) => {
+                    if (err) {
+                        console.error("Error al suscribirse al tópico mensajesESP:", err);
+                    } else {
+                        console.log("Suscripción exitosa a mensajesESP");
+                    }
+                });
+            });
+
+            mqttClient.on('message', (topic, message) => {
+              console.log("Mensaje recibido en el tópico:", topic); // Log para depuración
+                if (topic === "mensajesESP") {
+                    document.getElementById("espMessages").innerText = message.toString();
+                    console.log("Mensaje actualizado en espMessages:", message.toString()); // Log para confirmar
+                }
+                if (unityInstance) {
+                    unityInstance.SendMessage('Player', 'OnMessageReceived', message.toString());
+                }
+            });
+
+            mqttClient.on('error', (error) => {
+                console.error("Error de conexión:", error);
+            });
+        }
+      createUnityInstance(document.querySelector("#unity-canvas"), {
+        dataUrl: "Build/V3_FinalJuego.data.unityweb",
+        frameworkUrl: "Build/V3_FinalJuego.framework.js.unityweb",
+        codeUrl: "Build/V3_FinalJuego.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "JungleGame",
+        productVersion: "1.0",
+        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+      }).then((unityInstanceObj) => {
+            unityInstance = unityInstanceObj; // Guarda la instancia de Unity
+            connectMQTT(); // Llama a la función para conectar a MQTT
+
+             // Oculta el mensaje de carga y muestra el canvas y los botones
+             document.getElementById("loadingMessage").style.display = "none";
+            document.getElementById("unity-canvas").style.display = "block";
+      });
+      // Funciones de control de juego
+        function startGame() {
+            if (unityInstance) {
+                unityInstance.SendMessage('Player', 'StartGame');  // Llama a método en Unity
+            }
+        }
+
+        function stopGame() {
+            if (unityInstance) {
+                unityInstance.SendMessage('Player', 'StopGame');  // Llama a método en Unity
+            }
+        }
+    </script>
+  </body>
+</html>
+
