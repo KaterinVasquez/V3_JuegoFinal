@@ -69,42 +69,37 @@
           <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav ms-auto">
                   <li class="nav-item">
-                      <a class="nav-link click-scroll" href="index.html">Inicio</a>
+                      <a class="nav-link click-scroll" href="https://qhali.online/">Inicio</a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link click-scroll" href="estacion1.html">Estación 1: Pedalera</a>
+                      <a class="nav-link click-scroll" href="https://qhali.online/medico.html">Inicio: Personal Médico</a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link click-scroll" href="estacion2.html">Estación 2: Panel</a>
+                      <a class="nav-link click-scroll" href="https://qhali.online/estacion1.html">Volver: Estación 1</a>
                   </li>
-                  <li class="nav-item">
-                      <a class="nav-link click-scroll" href="estacion3.html">Estación 3: Barras</a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link click-scroll" href="estacion4.html">Estación 4: Escalera/Pendiente</a>
                   </li>
                   <li class="nav-item ms-3">
-                      <a class="nav-link custom-btn custom-border-btn btn" href="InicioSesion.php">Cerrar Sesión</a>
+                      <a class="nav-link custom-btn custom-border-btn btn" href="https://qhali.online/InicioSesion.php">Cerrar Sesión</a>
                   </li>
               </ul>
           </div>
       </div>
   </nav>
-
+  <div id="container" style="display: flex; justify-content: space-between;">
+    <!-- Cuadro de juego -->
+    <div id="gameArea" style="flex: 1; margin-right: 20px;">
     <!-- Indicador de carga -->
-    <div id="loadingMessage" style="font-size: 24px; margin-top: 20px;">Cargando...</div>
-    
-    <canvas id="unity-canvas" width=960 height=600 style="width: 960px; height: 600px; background: #231F20"></canvas>
-     <!-- Recuadro para mensajes del ESP32 -->
+      <div id="loadingMessage" style="font-size: 24px; margin-top: 20px;">Cargando...</div>    
+      <canvas id="unity-canvas" width=960 height=600 style="width: 960px; height: 600px; background: #231F20"></canvas>
+    </div> 
+    <!-- Recuadro para mensajes del ESP32 -->
     <div id="messageBox" style="display: block; border: 2px solid black; padding: 15px; width: 320px; margin: 20px auto; font-size: 18px; background-color: #e0e0e0; color: #333;">
       <h3>Mensajes del ESP32</h3>
       <div id="espMessages">Esperando mensajes...</div>
+        <!-- Botones de control -->
+      <button id="startButton" onclick="startGame()">Iniciar Juego</button>
+      <button id="stopButton" onclick="stopGame()">Detener Juego</button>
   </div>
-
-    <!-- Botones de control -->
-    <button id="startButton" onclick="startGame()">Iniciar Juego</button>
-    <button id="stopButton" onclick="stopGame()">Detener Juego</button>
-
     <script src="Build/V3_FinalJuego.loader.js"></script>
     <script>
         var mqttClient;
