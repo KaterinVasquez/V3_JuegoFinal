@@ -99,9 +99,10 @@
       <h5 class="mb-3">Mensajes de la pedalera</h3>
       <div id="espMessages">Esperando mensajes...</div>  
     </div>
-          <!-- Botones de control -->
-       <button  class="custom-btn btn mt-3" id="stopButton" onclick="stopGame()">Detener Juego</button>
-
+       <!-- Botones de control, centrados debajo del recuadro de mensajes -->
+       <div style="margin-top: 10px; width: 100%; max-width: 320px; display: flex; flex-direction: column; align-items: stretch;">
+        <button class="custom-btn btn mt-3"  id="stopButton" onclick="stopGame()" style="width: 100%; padding: 10px; margin: 5px 0;">Detener Juego</button>
+      </div>
   </div>
       </div>
     <script src="Build/V3_FinalJuego.loader.js"></script>
