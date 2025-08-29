@@ -122,7 +122,7 @@ function publishMessage(topic, message) {
         }
 
         function connectMQTT() {
-            mqttClient = mqtt.connect('wss://qhali.online:8094/mqtt');
+            mqttClient = mqtt.connect('wss://qhali.site:8094/mqtt');
 
             mqttClient.on('connect', () => {
                 console.log("Conectado a MQTT Broker.");
